@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>LinkedIn Crawler</title>		
+	</head>
+	<body>
+		<div class="main-content">
+			<label>Enter username to search: </label>
+			<input id="inputTxt" type="text"></input>
+			<button onclick="handleSubmit()">Search</button>
+			<div id="result">
+				<label>name: </label><label id="name"></label><br/>
+				<label>title: </label><label id="title"></label><br/>
+				<label>position: </label><label id="position"></label><br/>
+				<label>summary: </label><label id="summary"></label><br/>
+				<label>skills: </label><label id="skills"></label><br/>
+			</div>
+			<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+			<script>
+				function handleSubmit(){
+					var name = document.getElementById('inputTxt').value;
+					console.log('submitting '+name);
+					$.ajax({
+				      url: '/api/linkedinsearch',
+				      dataType: 'json',
+      				  type: 'POST',
+      				  data: {"username":name}, 
+				      success: function(data) {
+				        setData(data);
+				      }.bind(this),
+				      error: function(xhr, status, err) {
+				        console.log(status+', '+err.toString());
+				      }
+				    });
+				}
+
+				function setData(data){
+					document.getElementById('name').innerHTML = data.name; 
+					document.getElementById('title').innerHTML = data.title;
+					document.getElementById('position').innerHTML = data.position;
+					document.getElementById('summary').innerHTML = data.summary;
+					document.getElementById('skills').innerHTML = data.skills;
+				}
+			</script>
+		</div>
+	</body>
+</html>
