@@ -14,10 +14,14 @@ class MyHTMLParser:
 
     def gettitle(self):
         titleTag = self.soup.find(class_="headline title")
+        if titleTag == None:
+            return
         self.parsedJson['title'] = self.convertToString(titleTag.get_text())
 
     def getname(self):
         nametag = self.soup.find(id="name")
+        if nametag == None:
+            return
         self.parsedJson['name'] = self.convertToString(nametag.get_text())
 
     def getposition(self):
@@ -27,12 +31,20 @@ class MyHTMLParser:
                 return
 
     def getsummary(self):
-        nametag = self.soup.find(id="summary")
-        self.parsedJson['summary'] = self.convertToString(nametag.get_text())
+        summarytag = self.soup.find(id="summary")
+        if summarytag == None:
+            return
+        text = summarytag.get_text()
+        self.parsedJson['summary'] = self.convertToString(text)
 
     def getskills(self):
-        nametag = self.soup.find(id="skills")
-        self.parsedJson['skills'] = self.convertToString(nametag.get_text())
+        skills = []
+        skillstag = self.soup.find(id="skills")
+        if skillstag == None:
+            return
+        for span in skillstag.find_all('span'):
+            skills.append(self.convertToString(span.get_text()))
+        self.parsedJson['skills'] = skills
 
     def convertToString(self, text):
        return unicodedata.normalize('NFKD', text).encode('ascii','ignore')

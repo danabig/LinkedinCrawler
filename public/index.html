@@ -5,9 +5,15 @@
 	</head>
 	<body>
 		<div class="main-content">
+			<div id="counter">
+				<label>enter username to get top skills count: </label>
+				<input id="inputTxtCount" type="text"></input>				
+				<button onclick="handleSubmitCount()">Count</button>
+				<label id="countResult"></label>
+			</div>
 			<label>Enter username to search: </label>
 			<input id="inputTxt" type="text"></input>
-			<button onclick="handleSubmit()">Search</button>
+			<button onclick="handleSubmitUsername()">Search</button>
 			<div id="result">
 				<label>name: </label><label id="name"></label><br/>
 				<label>title: </label><label id="title"></label><br/>
@@ -17,9 +23,8 @@
 			</div>
 			<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 			<script>
-				function handleSubmit(){
+				function handleSubmitUsername(){
 					var name = document.getElementById('inputTxt').value;
-					console.log('submitting '+name);
 					$.ajax({
 				      url: '/api/linkedinsearch',
 				      dataType: 'json',
@@ -32,6 +37,26 @@
 				        console.log(status+', '+err.toString());
 				      }
 				    });
+				}
+
+				function handleSubmitCount(){
+					var name = document.getElementById('inputTxtCount').value;
+					$.ajax({
+				      url: '/api/linkedinsearch/count',
+				      dataType: 'json',
+      				  type: 'POST',
+      				  data: {"username":name}, 
+				      success: function(data) {
+				        setCount(data);
+				      }.bind(this),
+				      error: function(xhr, status, err) {
+				        console.log(status+', '+err.toString());
+				      }
+				    });
+				}
+
+				function setCount(data){
+					document.getElementById('countResult').innerHTML = data.count; 
 				}
 
 				function setData(data){

@@ -16,12 +16,24 @@ def request_handler():
     with open('linkedinUsers.json', 'r') as file:
         linkedInUsers = json.loads(file.read())
     data = request.form.to_dict()
-    newProfile = getProfile(data)
+    newProfile = {'username':data['username'],'data':getProfile(data)}
     linkedInUsers.append(newProfile)
     with open('linkedinUsers.json', 'w') as file:
         file.write(json.dumps(linkedInUsers, indent=4, separators=(',', ': ')))
+    return Response(json.dumps(newProfile['data']), mimetype='application/json', headers={'Cache-Control': 'no-cache', 'Access-Control-Allow-Origin': '*'})
 
-    return Response(json.dumps(newProfile), mimetype='application/json', headers={'Cache-Control': 'no-cache', 'Access-Control-Allow-Origin': '*'})
+
+@app.route('/api/linkedinsearch/count', methods=['GET', 'POST'])
+def request_count_handler():
+    with open('linkedinUsers.json', 'r') as file:
+        linkedInUsers = json.loads(file.read())
+    data = request.form.to_dict()
+    topSkillsCount = -1
+    for profile in linkedInUsers:
+        if profile['username'] == data['username']:
+            topSkillsCount = len(profile['data']['skills'])
+    return Response(json.dumps({"count":topSkillsCount}), mimetype='application/json', headers={'Cache-Control': 'no-cache', 'Access-Control-Allow-Origin': '*'})
+
 
 def getProfile(data):
     urlcomplete = BASE_URL+data['username']
@@ -34,8 +46,6 @@ def getProfile(data):
 def parseProfile(response):
     htmlText = response.read()
     parser = MyHTMLParser(htmlText)
-    print htmlText
-    # parser.feed(htmlText)
     return parser.getJson()
 
 if __name__ == '__main__':
